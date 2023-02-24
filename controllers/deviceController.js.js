@@ -6,11 +6,12 @@ const path = require('path')
 class DeviceController {
     async create(req, res, next) {
         try {
-            const { name, price, brandId, typeId, info } = req.body
-            const { img } = req.files
+            const { count, name, price, brandId, typeId, info, description, discount } = req.body
+            const { imgUrl } = req.files
             let fileName = uuid.v4() + ".jpg"
-            img.mv(path.resolve(__dirname, '..', 'static', fileName))
-            const device = await Device.create({ name, price, brandId, typeId, img: fileName })
+            imgUrl.mv(path.resolve(__dirname, '..', 'static', fileName))
+            let route = "http://localhost:" + process.env.PORT + "/" + fileName
+            const device = await Device.create({ count, name, price, brandId, typeId, imgUrl: route, description, discount })
 
             if (info) {
                 info = JSON.parse(info)

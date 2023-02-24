@@ -19,10 +19,13 @@ const CartDevice = sequelize.define('cart_device', {
 
 const Device = sequelize.define('device', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    count: { type: DataTypes.INTEGER, defaultValue: 1 },
+    description: { type: DataTypes.STRING, allowNull: false },
+    discount: {type: DataTypes.INTEGER, defaultValue: 0 },
+    imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
-    rating: { type: DataTypes.INTEGER, defaultValue: 0 },
-    img: { type: DataTypes.STRING, allowNull: false },
+    // rating: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 
 const Type = sequelize.define('type', {
@@ -35,10 +38,10 @@ const Brand = sequelize.define('brand', {
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
 })
 
-const Rating = sequelize.define('rating', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    rate: { type: DataTypes.INTEGER, allowNull: false },
-})
+// const Rating = sequelize.define('rating', {
+//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+//     rate: { type: DataTypes.INTEGER, allowNull: false },
+// })
 
 const DeviceInfo = sequelize.define('device_info', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -53,8 +56,8 @@ const TypeBrand = sequelize.define('type_brand', {
 User.hasOne(Cart)
 Cart.belongsTo(User)
 
-User.hasMany(Rating)
-Rating.belongsTo(User)
+// User.hasMany(Rating)
+// Rating.belongsTo(User)
 
 Cart.hasMany(CartDevice)
 CartDevice.belongsTo(Cart)
@@ -65,8 +68,8 @@ Device.belongsTo(Type)
 Brand.hasMany(Device)
 Device.belongsTo(Brand)
 
-Device.hasMany(Rating)
-Rating.belongsTo(Device)
+// Device.hasMany(Rating)
+// Rating.belongsTo(Device)
 
 Device.hasMany(CartDevice)
 CartDevice.belongsTo(Device)
@@ -78,13 +81,13 @@ Type.belongsToMany(Brand, { through: TypeBrand })
 Brand.belongsToMany(Type, { through: TypeBrand })
 
 module.exports = {
-    User, 
-    Cart, 
+    User,
+    Cart,
     CartDevice,
     Device,
     Type,
     Brand,
-    Rating,
+    // Rating,
     TypeBrand,
     DeviceInfo
 }
