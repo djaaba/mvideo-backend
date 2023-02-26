@@ -6,12 +6,12 @@ const path = require('path')
 class DeviceController {
     async create(req, res, next) {
         try {
-            const { count, name, price, brandId, typeId, info, description, discount } = req.body
+            const { count, name, price, brandId, typeId, info, description, discount, viewCount } = req.body
             const { imgUrl } = req.files
             let fileName = uuid.v4() + ".jpg"
-            imgUrl.mv(path.resolve(__dirname, '..', 'static', fileName))
-            let route = "http://localhost:" + process.env.PORT + "/" + fileName
-            const device = await Device.create({ count, name, price, brandId, typeId, imgUrl: route, description, discount })
+            imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
+            let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
+            const device = await Device.create({ count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount })
 
             if (info) {
                 info = JSON.parse(info)
@@ -57,14 +57,15 @@ class DeviceController {
     }
 
     async getOne(req, res) {
-        const {id} = req.params
+        const { id } = req.params
         const device = await Device.findOne({
-            where: {id},
+            where: { id },
             include: [{
-                model: DeviceInfo, 
+                model: DeviceInfo,
                 as: 'info'
             }]
         })
+        device.increment('viewCount');
         return res.json(device)
     }
 }
