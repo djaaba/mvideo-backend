@@ -4,8 +4,9 @@ const { DataTypes, INTEGER } = require('sequelize')
 
 const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    email: { type: DataTypes.STRING, unique: true },
-    password: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
     role: { type: DataTypes.STRING, defaultValue: "USER" },
 },
     {
@@ -45,6 +46,7 @@ const Type = sequelize.define('type', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
+    linkUrl: { type: DataTypes.STRING, allowNull: true },
 },
     {
         timestamps: false,
@@ -54,6 +56,7 @@ const Brand = sequelize.define('brand', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
+    linkUrl: { type: DataTypes.STRING, allowNull: true },
 },
     {
         timestamps: false,
