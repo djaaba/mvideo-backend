@@ -4,14 +4,14 @@ const path = require('path')
 
 class BrandController {
     async create(req, res) {
-        const { name } = req.body
+        const { name, linkUrl } = req.body
 
         const { imgUrl } = req.files
         let fileName = uuid.v4() + ".jpg"
         imgUrl.mv(path.resolve(__dirname, '../static/', 'brand', fileName))
         let route = "http://localhost:" + process.env.PORT + "/brand/" + fileName
 
-        const brand = await Brand.create({ name, imgUrl: route })
+        const brand = await Brand.create({ name, imgUrl: route, linkUrl })
         return res.json(brand)
     }
 

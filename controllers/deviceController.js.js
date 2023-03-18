@@ -6,8 +6,8 @@ const path = require('path')
 class DeviceController {
     async create(req, res, next) {
         try {
-            const { count, name, price, brandId, typeId, info, description, discount, viewCount } = req.body
-            const { imgUrl } = req.files
+            let { count, name, price, brandId, typeId, info, description, discount, viewCount } = req.body
+            let { imgUrl } = req.files
             let fileName = uuid.v4() + ".jpg"
             imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
             let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
