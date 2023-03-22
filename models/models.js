@@ -31,11 +31,13 @@ const Device = sequelize.define('device', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     count: { type: DataTypes.INTEGER, defaultValue: 1 },
     description: { type: DataTypes.STRING, allowNull: false },
-    discount: { type: DataTypes.INTEGER, defaultValue: 0 },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
+    discount: { type: DataTypes.INTEGER, defaultValue: 0 },
+    discountPrice: { type: DataTypes.INTEGER, allowNull: true },
     viewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+    purchasesCount: { type: DataTypes.INTEGER, defaultValue: 0 },
     // rating: { type: DataTypes.INTEGER, defaultValue: 0 },
 },
     {
@@ -46,7 +48,7 @@ const Type = sequelize.define('type', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    linkUrl: { type: DataTypes.STRING, allowNull: false },
+    // linkUrl: { type: DataTypes.STRING, allowNull: false },
 },
     {
         timestamps: false,
@@ -56,7 +58,7 @@ const Brand = sequelize.define('brand', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    linkUrl: { type: DataTypes.STRING, allowNull: false },
+    // linkUrl: { type: DataTypes.STRING, allowNull: false },
 },
     {
         timestamps: false,

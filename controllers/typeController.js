@@ -5,13 +5,13 @@ const path = require('path')
 
 class TypeController {
     async create(req, res) {
-        const { name, linkUrl } = req.body
+        const { name } = req.body
 
         const { imgUrl } = req.files
         let fileName = uuid.v4() + ".jpg"
         imgUrl.mv(path.resolve(__dirname, '../static/', 'type', fileName))
         let route = "http://localhost:" + process.env.PORT + "/type/" + fileName
-        const type = await Type.create({ name, imgUrl: route, linkUrl })
+        const type = await Type.create({ name, imgUrl: route })
         
         return res.json(type)
     }
