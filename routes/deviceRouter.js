@@ -5,6 +5,7 @@ const DeviceController = require('../controllers/deviceController.js')
 router.post('/', DeviceController.create)
 router.get('/bestsellers', DeviceController.getBestsellers)
 router.get('/mostviewed', DeviceController.getMostViewed)
+router.get('/match', DeviceController.getByMatch)
 router.get('/', DeviceController.getAll)
 router.get('/:id', DeviceController.getOne)
 

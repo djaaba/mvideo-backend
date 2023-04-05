@@ -46,6 +46,23 @@ class DeviceController {
         return res.json(devices)
     }
 
+    async getByMatch(req, res) {
+        let { word } = req.query;
+
+        let devices = await Device.findAll({
+            limit: 5,
+            where: {
+                name: {
+                    [Op.like]: '%' + word + '%'
+                },
+                // description: {
+                //     [Op.like]: '%' + word + '%'
+                // }
+            }})
+
+        return res.json(devices)
+    }
+
     async getAll(req, res) {
         let { brandId, typeId, limit, page, minPrice, maxPrice } = req.query
         page = page || 1;
