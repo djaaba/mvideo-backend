@@ -53,7 +53,7 @@ class DeviceController {
             limit: 5,
             where: {
                 name: {
-                    [Op.like]: '%' + word + '%'
+                    [Op.iLike]: '%' + word + '%'
                 },
                 // description: {
                 //     [Op.like]: '%' + word + '%'
