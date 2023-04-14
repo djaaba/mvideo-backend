@@ -58,7 +58,8 @@ class DeviceController {
                 // description: {
                 //     [Op.like]: '%' + word + '%'
                 // }
-            }})
+            }
+        })
 
         return res.json(devices)
     }
@@ -71,6 +72,10 @@ class DeviceController {
         let devices;
         if (!brandId && !typeId && minPrice && maxPrice) {
             devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
                 where: {
                     discountPrice: {
                         [Op.between]: [+minPrice, +maxPrice]
@@ -82,17 +87,110 @@ class DeviceController {
             })
         }
 
-        if (brandId && !typeId) {
-            devices = await Device.findAndCountAll({ where: { brandId }, limit, offset })
-
+        if (!brandId && !typeId && !minPrice && !maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                order: [['discountPrice', 'DESC']],
+                limit,
+                offset
+            })
         }
 
-        if (!brandId && typeId) {
-            devices = await Device.findAndCountAll({ where: { typeId }, limit, offset })
+        if (brandId && !typeId && !minPrice && !maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    brandId
+                },
+                limit,
+                offset
+            })
         }
 
-        if (brandId && typeId) {
-            devices = await Device.findAndCountAll({ where: { brandId, typeId }, limit, offset })
+        if (brandId && !typeId && minPrice && maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    brandId,
+                    discountPrice: {
+                        [Op.between]: [+minPrice, +maxPrice]
+                    }
+                },
+                limit,
+                offset
+            })
+        }
+
+        if (!brandId && typeId && minPrice && maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    typeId,
+                    discountPrice: {
+                        [Op.between]: [+minPrice, +maxPrice]
+                    }
+                },
+                limit,
+                offset
+            })
+        }
+
+        if (!brandId && typeId && !minPrice && !maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    typeId
+                },
+                limit,
+                offset
+            })
+        }
+
+        if (brandId && typeId && minPrice && maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    brandId, 
+                    typeId,
+                    discountPrice: {
+                        [Op.between]: [+minPrice, +maxPrice]
+                    }
+                },
+                limit,
+                offset
+            })
+        }
+
+        if (brandId && typeId && !minPrice && !maxPrice) {
+            devices = await Device.findAndCountAll({
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }],
+                where: {
+                    brandId, typeId
+                },
+                limit,
+                offset
+            })
         }
 
         return res.json(devices)
