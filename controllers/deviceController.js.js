@@ -168,7 +168,7 @@ class DeviceController {
                     as: 'info'
                 }],
                 where: {
-                    brandId, 
+                    brandId,
                     typeId,
                     discountPrice: {
                         [Op.between]: [+minPrice, +maxPrice]
@@ -207,6 +207,77 @@ class DeviceController {
         })
         device.increment('viewCount');
         return res.json(device)
+    }
+
+    async update(req, res) {
+        try {
+            let { id, count, name, price, brandId, typeId, info, description, discount, viewCount, purchasesCount } = req.body
+            let { imgUrl } = req.files
+            let fileName = uuid.v4() + ".jpg"
+            imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
+            let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
+            let discountPrice = (price * (100 - discount)) / 100;
+
+            const device = await Device.update(
+                { count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount, purchasesCount, discountPrice },
+                {
+                    where: {
+                        id
+                    }
+                }
+            )
+
+            DeviceInfo.destroy({
+                where:
+                {
+                    deviceId: id
+                }
+            })
+
+            if (info) {
+                info = JSON.parse(info)
+                info.forEach(i => {
+                    DeviceInfo.create({
+                        title: i.title,
+                        description: i.description,
+                        deviceId: id
+                    })
+                })
+            }
+
+            const currentDevice = await Device.findOne({
+                where: { id },
+                include: [{
+                    model: DeviceInfo,
+                    as: 'info'
+                }]
+            })
+
+            return res.json(currentDevice)
+        } catch (error) {
+            console.log(error.message)
+            return error.message;
+        }
+    }
+
+    async delete(req, res) {
+        const { id } = req.body
+
+        Device.destroy({
+            where:
+            {
+                id
+            }
+        })
+
+        DeviceInfo.destroy({
+            where:
+            {
+                deviceId: id
+            }
+        })
+
+        return res.json(true);
     }
 }
 

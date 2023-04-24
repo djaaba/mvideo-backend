@@ -7,6 +7,7 @@ const User = sequelize.define('user', {
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
+    address: { type: DataTypes.STRING, defaultValue: "" },
     role: { type: DataTypes.STRING, defaultValue: "USER" },
 },
     {
@@ -96,6 +97,19 @@ const TypeBrand = sequelize.define('type_brand', {
         timestamps: false,
     })
 
+const Store = sequelize.define('store', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, unique: true, allowNull: false, defaultValue: "test" },
+    phone: { type: DataTypes.STRING, unique: true, allowNull: false, defaultValue: "8(908)908-90-08" },
+    address: { type: DataTypes.STRING, allowNull: false, defaultValue: "test 2" },
+    email: { type: DataTypes.STRING, allowNull: false, defaultValue: "test@test.ru" },
+    imgUrl: { type: DataTypes.STRING, allowNull: true },
+},
+    {
+        timestamps: false,
+    }
+)
+
 User.hasOne(Cart)
 Cart.belongsTo(User)
 
@@ -133,5 +147,6 @@ module.exports = {
     Banner,
     // Rating,
     TypeBrand,
-    DeviceInfo
+    DeviceInfo,
+    Store
 }
