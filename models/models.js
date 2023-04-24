@@ -14,15 +14,11 @@ const User = sequelize.define('user', {
         timestamps: false,
     })
 
-const Cart = sequelize.define('cart', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-},
-    {
-        timestamps: false,
-    })
-
 const CartDevice = sequelize.define('cart_device', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    count: { type: DataTypes.INTEGER, allowNull: false },
+    order: { type: DataTypes.STRING, allowNull: false },
+    status: { type: DataTypes.BOOLEAN, allowNull: false },
 },
     {
         timestamps: false,
@@ -49,7 +45,6 @@ const Type = sequelize.define('type', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    // linkUrl: { type: DataTypes.STRING, allowNull: false },
 },
     {
         timestamps: false,
@@ -59,7 +54,6 @@ const Brand = sequelize.define('brand', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
-    // linkUrl: { type: DataTypes.STRING, allowNull: false },
 },
     {
         timestamps: false,
@@ -110,14 +104,10 @@ const Store = sequelize.define('store', {
     }
 )
 
-User.hasOne(Cart)
-Cart.belongsTo(User)
+User.hasMany(CartDevice)
 
 // User.hasMany(Rating)
 // Rating.belongsTo(User)
-
-Cart.hasMany(CartDevice)
-CartDevice.belongsTo(Cart)
 
 Type.hasMany(Device)
 Device.belongsTo(Type)
@@ -130,6 +120,7 @@ Device.belongsTo(Brand)
 
 Device.hasMany(CartDevice)
 CartDevice.belongsTo(Device)
+CartDevice.belongsTo(User) //
 
 Device.hasMany(DeviceInfo, { as: 'info' })
 DeviceInfo.belongsTo(Device)
@@ -139,7 +130,6 @@ Brand.belongsToMany(Type, { through: TypeBrand })
 
 module.exports = {
     User,
-    Cart,
     CartDevice,
     Device,
     Type,
