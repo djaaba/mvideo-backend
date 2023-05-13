@@ -38,13 +38,19 @@ class DeviceController {
     }
 
     async getBestsellers(req, res) {
-        let devices = await Device.findAll({ order: [['viewCount', 'DESC']], limit: 3 })
+        let devices = await Device.findAll({ order: [['purchasesCount', 'DESC']], limit: 5 })
 
         return res.json(devices)
     }
 
     async getMostViewed(req, res) {
-        let devices = await Device.findAll({ order: [['viewCount', 'DESC']], limit: 2 })
+        let devices = await Device.findAll({ order: [['viewCount', 'DESC']], limit: 5 })
+
+        return res.json(devices)
+    }
+
+    async getDiscounted(req, res) {
+        let devices = await Device.findAll({ order: [['discount', 'DESC']], limit: 5 })
 
         return res.json(devices)
     }
