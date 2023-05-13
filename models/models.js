@@ -9,6 +9,7 @@ const User = sequelize.define('user', {
     password: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, defaultValue: "" },
     role: { type: DataTypes.STRING, defaultValue: "USER" },
+    phone: { type: DataTypes.STRING, unique: true, allowNull: false, defaultValue: "" },
 },
     {
         timestamps: false,
@@ -64,7 +65,6 @@ const Banner = sequelize.define('banner', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, unique: true, allowNull: false },
     imgUrl: { type: DataTypes.STRING, allowNull: false },
-    linkUrl: { type: DataTypes.STRING, allowNull: true },
 },
     {
         timestamps: false,

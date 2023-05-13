@@ -1,10 +1,5 @@
-const { Device, DeviceInfo, CartDevice, User } = require("../models/models")
-const ApiError = require('../error/apiError')
-const uuid = require('uuid')
-const path = require('path')
+const { Device, CartDevice, User } = require("../models/models")
 const sequelize = require('../db')
-const { Op } = require("sequelize");
-
 
 class CartController {
     async create(req, res, next) {
@@ -28,96 +23,71 @@ class CartController {
 
     async getAll(req, res) {
         const orders = await CartDevice.findAll({
-            order: [['order', 'DESC']],
-            include: [{
-                model: User,
-                as: 'user'
-            },
-            {
-                model: Device,
-                as: 'device'
-            }
-            ]
+            attributes: ['order', 'status', 'userId', [sequelize.fn('array_agg', sequelize.col('count')), 'deviceCounts'], [sequelize.fn('array_agg', sequelize.col('deviceId')), 'deviceIds']],
+            group: ['order', 'userId', 'user.id', 'status'],
+            include: [
+                {
+                    model: User,
+                    as: 'user'
+                },
+            ],
         })
 
         return res.json(orders)
     }
 
-    async getBestsellers(req, res) {
-        let devices = await Device.findAll({ order: [['viewCount', 'DESC']], limit: 3 })
-
-        return res.json(devices)
+    async getOne(req, res) {
+        const { id } = req.params
+        const order = await CartDevice.findAll({
+            where: { order: id },
+            attributes: {
+                exclude: ['']
+            },
+            include: [
+                {
+                    model: Device,
+                    as: 'device'
+                },
+            ]
+        })
+        return res.json(order)
     }
 
     async update(req, res) {
-        // try {
-        //     let { id, count, name, price, brandId, typeId, info, description, discount, viewCount, purchasesCount } = req.body
-        //     let { imgUrl } = req.files
-        //     let fileName = uuid.v4() + ".jpg"
-        //     imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
-        //     let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
-        //     let discountPrice = (price * (100 - discount)) / 100;
+        let { order } = req.body
 
-        //     const device = await Device.update(
-        //         { count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount, purchasesCount, discountPrice },
-        //         {
-        //             where: {
-        //                 id
-        //             }
-        //         }
-        //     )
+        const orders = await CartDevice.update(
+            { status: true },
+            {
+                where: { order },
+            }
+        )
 
-        //     DeviceInfo.destroy({
-        //         where:
-        //         {
-        //             deviceId: id
-        //         }
-        //     })
-
-        //     if (info) {
-        //         info = JSON.parse(info)
-        //         info.forEach(i => {
-        //             DeviceInfo.create({
-        //                 title: i.title,
-        //                 description: i.description,
-        //                 deviceId: id
-        //             })
-        //         })
-        //     }
-
-        //     const currentDevice = await Device.findOne({
-        //         where: { id },
-        //         include: [{
-        //             model: DeviceInfo,
-        //             as: 'info'
-        //         }]
-        //     })
-
-        //     return res.json(currentDevice)
-        // } catch (error) {
-        //     console.log(error.message)
-        //     return error.message;
-        // }
+        return res.json(true)
     }
 
     async delete(req, res) {
-        // const { id } = req.body
+        const { id } = req.body || '';
+        const { order } = req.body || '';
 
-        // Device.destroy({
-        //     where:
-        //     {
-        //         id
-        //     }
-        // })
+        if (id) {
+            CartDevice.destroy({
+                where:
+                {
+                    id
+                }
+            })
+            return res.json(true)
+        }
 
-        // DeviceInfo.destroy({
-        //     where:
-        //     {
-        //         deviceId: id
-        //     }
-        // })
+        CartDevice.destroy({
+            where:
+            {
+                order
+            }
+        })
 
-        return res.json(true);
+        return res.json(true)
     }
 }
 

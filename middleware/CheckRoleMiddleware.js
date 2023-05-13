@@ -20,15 +20,3 @@ module.exports = function(role){
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -14,6 +14,6 @@ router.use('/brand', brandRouter)
 router.use('/device', deviceRouter)
 router.use('/banners', bannerRouter)
 router.use('/store', storeRouter)
-router.use('/cart', cartRouter)
+router.use('/order', cartRouter)
 
 module.exports = router

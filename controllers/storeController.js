@@ -10,18 +10,33 @@ class StoreController {
         const test = await Store.findAndCountAll()
 
         let { name, phone, address, email } = req.body
-        let { imgUrl } = req.files
-        let fileName = uuid.v4() + ".png"
-        imgUrl.mv(path.resolve(__dirname, '../static/', 'store', fileName))
-        let route = "http://localhost:" + process.env.PORT + "/store/" + fileName
+        let { imgUrl } = req.files || '';
 
-        if (!test.count) {
-            const store = await Store.create({ name, phone, address, email, imgUrl: route })
+        if (imgUrl) {
+            let fileName = uuid.v4() + ".png"
+            imgUrl.mv(path.resolve(__dirname, '../static/', 'store', fileName))
+            let route = "http://localhost:" + process.env.PORT + "/store/" + fileName
+
+            if (!test.count) {
+                const store = await Store.create({ name, phone, address, email, imgUrl: route })
+                return res.json(store)
+            }
+
+            const store = await Store.update(
+                { name, phone, address, email, imgUrl: route },
+                {
+                    where: {
+                        name: {
+                            [Op.ne]: null
+                        }
+                    }
+                }
+            )
             return res.json(store)
         }
 
         const store = await Store.update(
-            { name, phone, address, email, imgUrl: route },
+            { name, phone, address, email },
             {
                 where: {
                     name: {
@@ -31,12 +46,13 @@ class StoreController {
             }
         )
         return res.json(store)
+
     }
 
     async get(req, res) {
         const store = await Store.findOne(
             {
-                order: [ [ 'id', 'DESC' ]],
+                order: [['id', 'DESC']],
             }
         )
         return res.json(store)

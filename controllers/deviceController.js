@@ -12,10 +12,13 @@ class DeviceController {
             let { count, name, price, brandId, typeId, info, description, discount, viewCount, purchasesCount } = req.body
             let { imgUrl } = req.files
             let fileName = uuid.v4() + ".jpg"
-            imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
             let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
-            let discountPrice = (price * (100 - discount)) / 100;
+            let discountPrice = Math.round((price * (100 - discount)) / 100);
             const device = await Device.create({ count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount, purchasesCount, discountPrice })
+
+            if (device) {
+                imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
+            }
 
             if (info) {
                 info = JSON.parse(info)
@@ -72,10 +75,6 @@ class DeviceController {
         let devices;
         if (!brandId && !typeId && minPrice && maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     discountPrice: {
                         [Op.between]: [+minPrice, +maxPrice]
@@ -89,10 +88,6 @@ class DeviceController {
 
         if (!brandId && !typeId && !minPrice && !maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 order: [['discountPrice', 'DESC']],
                 limit,
                 offset
@@ -101,10 +96,6 @@ class DeviceController {
 
         if (brandId && !typeId && !minPrice && !maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     brandId
                 },
@@ -115,10 +106,6 @@ class DeviceController {
 
         if (brandId && !typeId && minPrice && maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     brandId,
                     discountPrice: {
@@ -132,10 +119,6 @@ class DeviceController {
 
         if (!brandId && typeId && minPrice && maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     typeId,
                     discountPrice: {
@@ -149,10 +132,6 @@ class DeviceController {
 
         if (!brandId && typeId && !minPrice && !maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     typeId
                 },
@@ -163,10 +142,6 @@ class DeviceController {
 
         if (brandId && typeId && minPrice && maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     brandId,
                     typeId,
@@ -181,10 +156,6 @@ class DeviceController {
 
         if (brandId && typeId && !minPrice && !maxPrice) {
             devices = await Device.findAndCountAll({
-                include: [{
-                    model: DeviceInfo,
-                    as: 'info'
-                }],
                 where: {
                     brandId, typeId
                 },
@@ -198,6 +169,7 @@ class DeviceController {
 
     async getOne(req, res) {
         const { id } = req.params
+        const { flag } = req.query || true;
         const device = await Device.findOne({
             where: { id },
             include: [{
@@ -205,46 +177,77 @@ class DeviceController {
                 as: 'info'
             }]
         })
-        device.increment('viewCount');
+        flag && device.increment('viewCount');
         return res.json(device)
     }
 
     async update(req, res) {
         try {
             let { id, count, name, price, brandId, typeId, info, description, discount, viewCount, purchasesCount } = req.body
-            let { imgUrl } = req.files
-            let fileName = uuid.v4() + ".jpg"
-            imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
-            let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
-            let discountPrice = (price * (100 - discount)) / 100;
+            let { imgUrl } = req.files || '';
 
-            const device = await Device.update(
-                { count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount, purchasesCount, discountPrice },
-                {
-                    where: {
-                        id
+            let discountPrice = Math.round((price * (100 - discount)) / 100);
+
+            if (imgUrl) {
+                let fileName = uuid.v4() + ".jpg"
+                imgUrl.mv(path.resolve(__dirname, '../static/', 'device', fileName))
+                let route = "http://localhost:" + process.env.PORT + "/device/" + fileName
+
+                const device = await Device.update(
+                    { count, name, price, brandId, typeId, imgUrl: route, description, discount, viewCount, purchasesCount, discountPrice },
+                    {
+                        where: {
+                            id
+                        }
                     }
-                }
-            )
+                )
 
-            DeviceInfo.destroy({
-                where:
-                {
-                    deviceId: id
-                }
-            })
-
-            if (info) {
-                info = JSON.parse(info)
-                info.forEach(i => {
-                    DeviceInfo.create({
-                        title: i.title,
-                        description: i.description,
+                DeviceInfo.destroy({
+                    where:
+                    {
                         deviceId: id
-                    })
+                    }
                 })
-            }
 
+                if (info) {
+                    info = JSON.parse(info)
+                    info.forEach(i => {
+                        DeviceInfo.create({
+                            title: i.title,
+                            description: i.description,
+                            deviceId: id
+                        })
+                    })
+                }
+            }
+            else {
+                const device = await Device.update(
+                    { count, name, price, brandId, typeId, description, discount, viewCount, purchasesCount, discountPrice },
+                    {
+                        where: {
+                            id
+                        }
+                    }
+                )
+
+                DeviceInfo.destroy({
+                    where:
+                    {
+                        deviceId: id
+                    }
+                })
+
+                if (info) {
+                    info = JSON.parse(info)
+                    info.forEach(i => {
+                        DeviceInfo.create({
+                            title: i.title,
+                            description: i.description,
+                            deviceId: id
+                        })
+                    })
+                }
+            }
             const currentDevice = await Device.findOne({
                 where: { id },
                 include: [{
@@ -252,8 +255,8 @@ class DeviceController {
                     as: 'info'
                 }]
             })
-
             return res.json(currentDevice)
+
         } catch (error) {
             console.log(error.message)
             return error.message;
