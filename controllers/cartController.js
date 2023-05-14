@@ -36,10 +36,10 @@ class CartController {
         return res.json(orders)
     }
 
-    async getOne(req, res) {
-        const { id } = req.params
-        const order = await CartDevice.findAll({
-            where: { order: id },
+    async getOneByOrder(req, res) {
+        const { order } = req.params
+        const details = await CartDevice.findAll({
+            where: { order },
             attributes: {
                 exclude: ['']
             },
@@ -50,7 +50,18 @@ class CartController {
                 },
             ]
         })
-        return res.json(order)
+        return res.json(details)
+    }
+
+    async getOneByUserId(req, res) {
+        const { id } = req.params
+        const details = await CartDevice.findAll({
+            where: { userId: id },
+            attributes: [[sequelize.fn('array_agg', sequelize.col('order')), 'orders']],
+            group: ['order'],
+            
+        })
+        return res.json(details)
     }
 
     async update(req, res) {
