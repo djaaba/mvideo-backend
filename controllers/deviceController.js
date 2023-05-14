@@ -55,6 +55,32 @@ class DeviceController {
         return res.json(devices)
     }
 
+    async getRecommended(req, res) {
+        let { devices } = req.body;
+        let recommended = []
+
+        for await (const item of devices) {
+            let { typeId, discountPrice, id } = item
+            await Device.findAll({
+                where: {
+                    typeId,
+                    id: {
+                        [Op.ne]: id
+                    },
+                    discountPrice: {
+                        [Op.between]: [+discountPrice * 0.75, +discountPrice * 1.25]
+                    },
+                },
+                order: [['discountPrice', 'ASC']],
+                limit: 3
+            }).then((result) => {
+                recommended.push(...result)
+            })
+        }
+
+        return res.json(recommended)
+    }
+
     async getByMatch(req, res) {
         let { word } = req.query;
 
