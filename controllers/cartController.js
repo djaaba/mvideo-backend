@@ -1,4 +1,5 @@
 const { Device, CartDevice, User } = require("../models/models")
+const ApiError = require('../error/apiError')
 const sequelize = require('../db')
 
 class CartController {
@@ -53,15 +54,19 @@ class CartController {
         return res.json(details)
     }
 
-    async getOneByUserId(req, res) {
-        const { id } = req.params
-        const details = await CartDevice.findAll({
-            where: { userId: id },
-            attributes: [[sequelize.fn('array_agg', sequelize.col('order')), 'orders']],
-            group: ['order'],
-            
-        })
-        return res.json(details)
+    async getOneByUserId(req, res, next) {
+        try {
+            const { id } = req.params
+            const details = await CartDevice.findAll({
+                where: { userId: id },
+                attributes: [[sequelize.fn('array_agg', sequelize.col('order')), 'orders']],
+                group: ['order'],
+
+            })
+            return res.json(details)
+        } catch (error) {
+            next(ApiError.badRequest(error.message))
+        }
     }
 
     async update(req, res) {
