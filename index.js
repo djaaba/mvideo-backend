@@ -17,8 +17,6 @@ app.use(express.static(path.resolve(__dirname, 'static')))
 app.use(fileUpload({}))
 app.use('/api', router)
 
-// handling error, the last middleware
-// Как домашнее задание говорит сделать корзину и рейтинг 1:07:45
 app.use(errorHandler)
 
 app.get('/', (req, res) => {

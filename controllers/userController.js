@@ -26,6 +26,7 @@ class UserController {
         const token = generateJwt(user.id, user.email, user.role, user.name, user.address)
         return res.json({ token })
     }
+
     async login(req, res, next) {
         const { email, password } = req.body
         const user = await User.findOne({ where: { email } })
@@ -39,9 +40,15 @@ class UserController {
         const token = generateJwt(user.id, user.email, user.role, user.name, user.address, user.phone)
         return res.json({ token })
     }
+
     async check(req, res, next) {
         const token = generateJwt(req.user.id, req.user.email, req.user.role, req.user.name, req.user.address, req.user.phone)
         return res.json({ token })
+    }
+
+    async getAll(req, res) {
+        const users = await User.findAll()
+        return res.json(users)
     }
 
     async update(req, res, next) {
@@ -138,8 +145,6 @@ class UserController {
 
         const token = generateJwt(currentUser.id, currentUser.email, currentUser.role, currentUser.name, currentUser.phone, currentUser.address)
         return res.json({ token })
-
-        // return res.json(user)
     }
 
 }

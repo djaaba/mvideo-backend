@@ -36,7 +36,6 @@ const Device = sequelize.define('device', {
     discountPrice: { type: DataTypes.INTEGER, allowNull: true },
     viewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
     purchasesCount: { type: DataTypes.INTEGER, defaultValue: 0 },
-    // rating: { type: DataTypes.INTEGER, defaultValue: 0 },
 },
     {
         timestamps: false,
@@ -70,11 +69,6 @@ const Banner = sequelize.define('banner', {
         timestamps: false,
     })
 
-// const Rating = sequelize.define('rating', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-//     rate: { type: DataTypes.INTEGER, allowNull: false },
-// })
-
 const DeviceInfo = sequelize.define('device_info', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
@@ -106,21 +100,15 @@ const Store = sequelize.define('store', {
 
 User.hasMany(CartDevice)
 
-// User.hasMany(Rating)
-// Rating.belongsTo(User)
-
 Type.hasMany(Device)
 Device.belongsTo(Type)
 
 Brand.hasMany(Device)
 Device.belongsTo(Brand)
 
-// Device.hasMany(Rating)
-// Rating.belongsTo(Device)
-
 Device.hasMany(CartDevice)
 CartDevice.belongsTo(Device)
-CartDevice.belongsTo(User) //
+CartDevice.belongsTo(User)
 
 Device.hasMany(DeviceInfo, { as: 'info' })
 DeviceInfo.belongsTo(Device)
@@ -135,7 +123,6 @@ module.exports = {
     Type,
     Brand,
     Banner,
-    // Rating,
     TypeBrand,
     DeviceInfo,
     Store
